@@ -7,24 +7,24 @@ const PLATFORMS = {
     label: "TikTok", icon: "♪", color: "#39ff14",
     services: [
       { id: "tt_followers", label: "Followers", icon: "◎", desc: "Boost your TikTok profile credibility with real-looking followers delivered fast.",
-        tiers: [{ qty: 100, price: 1500 }, { qty: 500, price: 5500 }, { qty: 1000, price: 9500 }, { qty: 5000, price: 35000 }, { qty: 10000, price: 65000 }] },
+        tiers: [{ qty: 100, price: 500 }, { qty: 500, price: 2500 }, { qty: 1000, price: 5000 }, { qty: 5000, price: 25000 }, { qty: 10000, price: 50000 }] },
       { id: "tt_likes", label: "Likes", icon: "◈", desc: "Push your videos higher in TikTok's algorithm with engagement signals.",
-        tiers: [{ qty: 100, price: 800 }, { qty: 500, price: 3200 }, { qty: 1000, price: 5500 }, { qty: 5000, price: 20000 }, { qty: 10000, price: 36000 }] },
+        tiers: [{ qty: 100, price: 280 }, { qty: 500, price: 1400 }, { qty: 1000, price: 2800 }, { qty: 5000, price: 14000 }, { qty: 10000, price: 28000 }] },
       { id: "tt_views", label: "Views", icon: "◉", desc: "Hit TikTok view thresholds fast and trigger the algorithm.",
-        tiers: [{ qty: 1000, price: 800 }, { qty: 5000, price: 2800 }, { qty: 10000, price: 4800 }, { qty: 50000, price: 16000 }, { qty: 100000, price: 28000 }] },
+        tiers: [{ qty: 1000, price: 320 }, { qty: 5000, price: 1600 }, { qty: 10000, price: 3200 }, { qty: 50000, price: 16000 }, { qty: 100000, price: 32000 }] },
       { id: "tt_reposts", label: "Reposts", icon: "◫", desc: "Spread your content across TikTok networks and expand reach.",
-        tiers: [{ qty: 50, price: 2000 }, { qty: 100, price: 3200 }, { qty: 500, price: 12000 }, { qty: 1000, price: 20000 }, { qty: 5000, price: 72000 }] },
+        tiers: [{ qty: 50, price: 40 }, { qty: 100, price: 80 }, { qty: 500, price: 400 }, { qty: 1000, price: 800 }, { qty: 5000, price: 4000 }] },
     ],
   },
   youtube: {
     label: "YouTube", icon: "▶", color: "#ff3939",
     services: [
       { id: "yt_subscribers", label: "Subscribers", icon: "◎", desc: "Grow your YouTube channel subscriber count and boost social proof.",
-        tiers: [{ qty: 100, price: 2500 }, { qty: 500, price: 9500 }, { qty: 1000, price: 16000 }, { qty: 5000, price: 60000 }, { qty: 10000, price: 110000 }] },
+        tiers: [{ qty: 100, price: 3000 }, { qty: 500, price: 15000 }, { qty: 1000, price: 30000 }, { qty: 5000, price: 150000 }, { qty: 10000, price: 300000 }] },
       { id: "yt_likes", label: "Likes", icon: "◈", desc: "Increase your video like count and improve YouTube ranking signals.",
-        tiers: [{ qty: 100, price: 1200 }, { qty: 500, price: 4500 }, { qty: 1000, price: 8000 }, { qty: 5000, price: 30000 }, { qty: 10000, price: 55000 }] },
+        tiers: [{ qty: 100, price: 250 }, { qty: 500, price: 1250 }, { qty: 1000, price: 2500 }, { qty: 5000, price: 12500 }, { qty: 10000, price: 25000 }] },
       { id: "yt_shares", label: "Shares", icon: "◫", desc: "Amplify your video reach across platforms with share boosts.",
-        tiers: [{ qty: 50, price: 1800 }, { qty: 100, price: 3000 }, { qty: 500, price: 10000 }, { qty: 1000, price: 18000 }, { qty: 5000, price: 80000 }] },
+        tiers: [{ qty: 100, price: 360 }, { qty: 500, price: 1800 }, { qty: 1000, price: 3600 }, { qty: 5000, price: 18000 }, { qty: 10000, price: 36000 }] },
     ],
   },
 };
@@ -40,22 +40,16 @@ function PaymentModal({ order, onClose, onConfirmed }) {
   const [step, setStep] = useState("loading");
   const [bankInfo, setBankInfo] = useState(null);
   const [error, setError] = useState(null);
-  const [countdown, setCountdown] = useState(null);
   const timerRef = useRef(null);
   const ac = order.platform === "youtube" ? "#ff3939" : "#39ff14";
 
   useEffect(() => {
-    // Call real backend to create order + get virtual account
     fetch(`${BACKEND}/create-order`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        id: order.id,
-        platform: order.platform,
-        service: order.service,
-        qty: order.qty,
-        price: order.price,
-        username: order.username,
+        id: order.id, platform: order.platform, service: order.service,
+        qty: order.qty, price: order.price, username: order.username,
       }),
     })
       .then(r => r.json())
@@ -63,7 +57,6 @@ function PaymentModal({ order, onClose, onConfirmed }) {
         if (data.error) { setError(data.error); setStep("error"); return; }
         setBankInfo(data);
         setStep("waiting");
-        // Start polling for payment confirmation
         startPolling();
       })
       .catch(() => { setError("Could not connect to server. Try again."); setStep("error"); });
@@ -81,8 +74,7 @@ function PaymentModal({ order, onClose, onConfirmed }) {
           setStep("confirmed");
           setTimeout(onConfirmed, 1800);
         }
-      } catch (e) { /* keep polling */ }
-      // Stop polling after 10 minutes
+      } catch (e) { }
       if (attempts > 120) clearInterval(timerRef.current);
     }, 5000);
   };
@@ -110,7 +102,7 @@ function PaymentModal({ order, onClose, onConfirmed }) {
 
         {step === "waiting" && bankInfo && <>
           <div style={{ fontSize: 9, letterSpacing: "0.25em", color: ac, textTransform: "uppercase", marginBottom: 8 }}>Transfer Details</div>
-          <div style={{ fontSize: 11, color: "#444", marginBottom: 24, letterSpacing: "0.04em" }}>{order.qty.toLocaleString()} {order.service} · {order.platform === "tiktok" ? "TikTok" : "YouTube"}</div>
+          <div style={{ fontSize: 11, color: "#444", marginBottom: 24 }}>{order.qty.toLocaleString()} {order.service} · {order.platform === "tiktok" ? "TikTok" : "YouTube"}</div>
           <div style={{ background: "#111", border: `1px solid ${ac}22`, padding: 24, marginBottom: 24 }}>
             <div style={{ fontSize: 9, color: "#333", letterSpacing: "0.2em", textTransform: "uppercase", marginBottom: 6 }}>Bank</div>
             <div style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 20, marginBottom: 18 }}>{bankInfo.bank}</div>
@@ -123,9 +115,9 @@ function PaymentModal({ order, onClose, onConfirmed }) {
             <div style={{ fontSize: 9, color: "#333", letterSpacing: "0.2em", textTransform: "uppercase", marginBottom: 6 }}>Amount</div>
             <div style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 28 }}>{formatNaira(order.price)}</div>
           </div>
-          <div style={{ textAlign: "center", fontSize: 10, color: "#444", letterSpacing: "0.08em", lineHeight: 1.7 }}>
+          <div style={{ textAlign: "center", fontSize: 10, color: "#444", lineHeight: 1.7 }}>
             Transfer the exact amount to the account above.<br />
-            <span style={{ color: ac }}>This page will update automatically once payment is received.</span>
+            <span style={{ color: ac }}>Page updates automatically once payment is received.</span>
           </div>
         </>}
 
@@ -133,7 +125,7 @@ function PaymentModal({ order, onClose, onConfirmed }) {
           <div style={{ textAlign: "center", padding: "32px 0" }}>
             <div style={{ fontSize: 44, marginBottom: 14, color: ac }}>✓</div>
             <div style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 30, color: ac, marginBottom: 8 }}>Payment Confirmed</div>
-            <div style={{ fontSize: 11, color: "#444", letterSpacing: "0.05em" }}>Taking you to your order tracker...</div>
+            <div style={{ fontSize: 11, color: "#444" }}>Taking you to your order tracker...</div>
           </div>
         )}
       </div>
@@ -173,7 +165,7 @@ function OrderTracker({ initId, onBack }) {
         const data = await res.json();
         if (!data.error) setOrder(data);
         if (data.status >= STATUS_STEPS.length - 1) clearInterval(intervalRef.current);
-      } catch { /* keep polling */ }
+      } catch { }
     }, 5000);
     return () => clearInterval(intervalRef.current);
   }, [order?.id, order?.status]);
@@ -186,7 +178,6 @@ function OrderTracker({ initId, onBack }) {
         <button onClick={onBack} style={{ background: "none", border: "none", color: "#444", cursor: "pointer", fontFamily: "'DM Mono', monospace", fontSize: 10, letterSpacing: "0.18em", textTransform: "uppercase", marginBottom: 44, display: "flex", alignItems: "center", gap: 8 }}>← Back</button>
         <div style={{ fontSize: 9, letterSpacing: "0.3em", color: "#39ff14", textTransform: "uppercase", marginBottom: 8 }}>Order Tracker</div>
         <h1 style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 48, marginBottom: 36 }}>TRACK YOUR ORDER</h1>
-
         <div style={{ display: "flex", marginBottom: 36 }}>
           <input value={inputId} onChange={e => setInputId(e.target.value)} onKeyDown={e => e.key === "Enter" && lookup(inputId)}
             placeholder="Enter Order ID  e.g. LGT-ABC123"
@@ -195,9 +186,7 @@ function OrderTracker({ initId, onBack }) {
             {loading ? "..." : "Track"}
           </button>
         </div>
-
         {searched && !order && !loading && <div style={{ color: "#333", fontSize: 12 }}>No order found with that ID.</div>}
-
         {order && (
           <div style={{ border: `1px solid ${ac}33`, background: "#0a0a0a", padding: 28 }}>
             <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 20, marginBottom: 32 }}>
@@ -219,8 +208,8 @@ function OrderTracker({ initId, onBack }) {
                       {done && "✓"}
                     </div>
                     <div>
-                      <div style={{ fontSize: 12, letterSpacing: "0.05em", color: done ? "#f0f0f0" : "#2a2a2a", transition: "color 0.5s" }}>{step}</div>
-                      {active && i < STATUS_STEPS.length - 1 && <div style={{ fontSize: 9, color: ac, letterSpacing: "0.12em", marginTop: 2 }}>In progress...</div>}
+                      <div style={{ fontSize: 12, color: done ? "#f0f0f0" : "#2a2a2a", transition: "color 0.5s" }}>{step}</div>
+                      {active && i < STATUS_STEPS.length - 1 && <div style={{ fontSize: 9, color: ac, marginTop: 2 }}>In progress...</div>}
                     </div>
                   </div>
                 );
@@ -248,17 +237,13 @@ function AdminLogin({ onLogin }) {
     setLoading(true);
     try {
       const res = await fetch(`${BACKEND}/admin-login`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
+        method: "POST", headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ password: pw }),
       });
       const data = await res.json();
-      if (data.token) {
-        localStorage.setItem(ADMIN_PASSWORD_KEY, data.token);
-        onLogin(data.token);
-      } else {
-        const a = attempts + 1;
-        setAttempts(a); setError(true); setPw("");
+      if (data.token) { localStorage.setItem(ADMIN_PASSWORD_KEY, data.token); onLogin(data.token); }
+      else {
+        const a = attempts + 1; setAttempts(a); setError(true); setPw("");
         setTimeout(() => setError(false), 2200);
         if (a >= 5) {
           setLocked(true); setLockLeft(30);
@@ -286,8 +271,8 @@ function AdminLogin({ onLogin }) {
         ) : (<>
           <input type="password" value={pw} onChange={e => setPw(e.target.value)} onKeyDown={e => e.key === "Enter" && tryLogin()}
             placeholder="Password"
-            style={{ width: "100%", background: "#111", border: `1px solid ${error ? "#ff393988" : "#1a1a1a"}`, color: "#f0f0f0", padding: "13px 16px", fontFamily: "'DM Mono', monospace", fontSize: 13, outline: "none", marginBottom: 10, boxSizing: "border-box", transition: "border-color 0.2s" }} />
-          {error && <div style={{ color: "#ff3939", fontSize: 9, letterSpacing: "0.1em", marginBottom: 10 }}>Incorrect. {5 - attempts} attempt{5 - attempts !== 1 ? "s" : ""} remaining.</div>}
+            style={{ width: "100%", background: "#111", border: `1px solid ${error ? "#ff393988" : "#1a1a1a"}`, color: "#f0f0f0", padding: "13px 16px", fontFamily: "'DM Mono', monospace", fontSize: 13, outline: "none", marginBottom: 10, boxSizing: "border-box" }} />
+          {error && <div style={{ color: "#ff3939", fontSize: 9, marginBottom: 10 }}>Incorrect. {5 - attempts} attempt{5 - attempts !== 1 ? "s" : ""} remaining.</div>}
           <button onClick={tryLogin} style={{ width: "100%", background: "#39ff14", color: "#000", border: "none", padding: "13px", fontFamily: "'Bebas Neue', sans-serif", fontSize: 18, letterSpacing: "0.1em", cursor: "pointer" }}>
             {loading ? "Checking..." : "Enter"}
           </button>
@@ -304,13 +289,11 @@ function AdminDashboard({ token, onLogout }) {
 
   const fetchOrders = async () => {
     try {
-      const res = await fetch(`${BACKEND}/admin/orders`, {
-        headers: { "x-admin-token": token },
-      });
+      const res = await fetch(`${BACKEND}/admin/orders`, { headers: { "x-admin-token": token } });
       if (res.status === 401) { onLogout(); return; }
       const data = await res.json();
       setOrders(Array.isArray(data) ? data : []);
-    } catch { /* retry next interval */ }
+    } catch { }
     setLoading(false);
   };
 
@@ -324,7 +307,7 @@ function AdminDashboard({ token, onLogout }) {
 
   return (
     <div style={{ minHeight: "100vh", background: "#050505", color: "#f0f0f0", fontFamily: "'DM Mono', monospace" }}>
-      <style>{`.arow { border-bottom: 1px solid #0d0d0d; transition: background 0.15s; } .arow:hover { background: #0c0c0c; }`}</style>
+      <style>{`.arow{border-bottom:1px solid #0d0d0d;transition:background 0.15s}.arow:hover{background:#0c0c0c}`}</style>
       <div style={{ borderBottom: "1px solid #0d0d0d", padding: "16px 28px", display: "flex", justifyContent: "space-between", alignItems: "center", background: "rgba(5,5,5,0.97)", position: "sticky", top: 0, zIndex: 10 }}>
         <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
           <span style={{ width: 7, height: 7, borderRadius: "50%", background: "#39ff14", display: "inline-block", boxShadow: "0 0 8px #39ff14" }} />
@@ -333,7 +316,6 @@ function AdminDashboard({ token, onLogout }) {
         </div>
         <button onClick={onLogout} style={{ background: "none", border: "1px solid #141414", color: "#444", padding: "8px 16px", cursor: "pointer", fontFamily: "'DM Mono', monospace", fontSize: 9, letterSpacing: "0.12em", textTransform: "uppercase" }}>Logout</button>
       </div>
-
       <div style={{ maxWidth: 1180, margin: "0 auto", padding: "36px 28px" }}>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 12, marginBottom: 24 }}>
           {[["Total Revenue", formatNaira(totalRev), "#39ff14"], ["Total Orders", orders.length, "#f0f0f0"], ["Completed", completed, "#39ff14"], ["Processing", processing, "#ffaa00"]].map(([l, v, c]) => (
@@ -343,7 +325,6 @@ function AdminDashboard({ token, onLogout }) {
             </div>
           ))}
         </div>
-
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 36 }}>
           {[["TikTok Revenue", ttRev, "#39ff14"], ["YouTube Revenue", ytRev, "#ff3939"]].map(([l, v, c]) => (
             <div key={l} style={{ background: "#0b0b0b", border: `1px solid ${c}18`, padding: "18px 22px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
@@ -352,32 +333,29 @@ function AdminDashboard({ token, onLogout }) {
             </div>
           ))}
         </div>
-
         <div style={{ fontSize: 9, color: "#39ff14", letterSpacing: "0.22em", textTransform: "uppercase", marginBottom: 16 }}>All Orders ({orders.length})</div>
-        {loading ? (
-          <div style={{ color: "#333", fontSize: 12, padding: "48px 0" }}>Loading orders...</div>
-        ) : orders.length === 0 ? (
-          <div style={{ color: "#222", fontSize: 12, padding: "48px 0" }}>No orders yet.</div>
-        ) : (
-          <div style={{ border: "1px solid #111", overflow: "hidden" }}>
-            <div style={{ display: "grid", gridTemplateColumns: "1.6fr 0.8fr 0.8fr 0.7fr 1fr 1fr", padding: "11px 18px", background: "#090909", fontSize: 8, color: "#2a2a2a", letterSpacing: "0.18em", textTransform: "uppercase" }}>
-              {["Order ID", "Platform", "Service", "Qty", "Amount", "Status"].map(h => <div key={h}>{h}</div>)}
+        {loading ? <div style={{ color: "#333", fontSize: 12, padding: "48px 0" }}>Loading orders...</div>
+          : orders.length === 0 ? <div style={{ color: "#222", fontSize: 12, padding: "48px 0" }}>No orders yet.</div>
+          : (
+            <div style={{ border: "1px solid #111", overflow: "hidden" }}>
+              <div style={{ display: "grid", gridTemplateColumns: "1.6fr 0.8fr 0.8fr 0.7fr 1fr 1fr", padding: "11px 18px", background: "#090909", fontSize: 8, color: "#2a2a2a", letterSpacing: "0.18em", textTransform: "uppercase" }}>
+                {["Order ID", "Platform", "Service", "Qty", "Amount", "Status"].map(h => <div key={h}>{h}</div>)}
+              </div>
+              {orders.map(o => {
+                const sc = o.status === STATUS_STEPS.length - 1 ? "#39ff14" : o.status > 0 ? "#ffaa00" : "#444";
+                return (
+                  <div key={o.id} className="arow" style={{ display: "grid", gridTemplateColumns: "1.6fr 0.8fr 0.8fr 0.7fr 1fr 1fr", padding: "15px 18px", fontSize: 11, alignItems: "center" }}>
+                    <div style={{ color: "#39ff14", fontFamily: "'Bebas Neue', sans-serif", fontSize: 14 }}>{o.id}</div>
+                    <div style={{ color: o.platform === "youtube" ? "#ff3939" : "#39ff14", textTransform: "capitalize", fontSize: 10 }}>{o.platform}</div>
+                    <div style={{ color: "#888" }}>{o.service}</div>
+                    <div style={{ color: "#666" }}>{o.qty?.toLocaleString()}</div>
+                    <div style={{ color: "#ccc" }}>{formatNaira(o.price)}</div>
+                    <div style={{ color: sc, fontSize: 9 }}>{STATUS_STEPS[o.status] || "Unknown"}</div>
+                  </div>
+                );
+              })}
             </div>
-            {orders.map(o => {
-              const sc = o.status === STATUS_STEPS.length - 1 ? "#39ff14" : o.status > 0 ? "#ffaa00" : "#444";
-              return (
-                <div key={o.id} className="arow" style={{ display: "grid", gridTemplateColumns: "1.6fr 0.8fr 0.8fr 0.7fr 1fr 1fr", padding: "15px 18px", fontSize: 11, alignItems: "center" }}>
-                  <div style={{ color: "#39ff14", fontFamily: "'Bebas Neue', sans-serif", fontSize: 14 }}>{o.id}</div>
-                  <div style={{ color: o.platform === "youtube" ? "#ff3939" : "#39ff14", textTransform: "capitalize", fontSize: 10 }}>{o.platform}</div>
-                  <div style={{ color: "#888" }}>{o.service}</div>
-                  <div style={{ color: "#666" }}>{o.qty?.toLocaleString()}</div>
-                  <div style={{ color: "#ccc" }}>{formatNaira(o.price)}</div>
-                  <div style={{ color: sc, fontSize: 9 }}>{STATUS_STEPS[o.status] || "Unknown"}</div>
-                </div>
-              );
-            })}
-          </div>
-        )}
+          )}
       </div>
     </div>
   );
@@ -402,15 +380,7 @@ export default function App() {
 
   const handlePlaceOrder = () => {
     if (!selectedTier || !username.trim()) return;
-    const o = {
-      id: genOrderId(),
-      platform,
-      service: cs.label,
-      qty: selectedTier.qty,
-      price: selectedTier.price,
-      username: username.trim(),
-    };
-    setPendingOrder(o);
+    setPendingOrder({ id: genOrderId(), platform, service: cs.label, qty: selectedTier.qty, price: selectedTier.price, username: username.trim() });
   };
 
   const handlePaymentConfirmed = () => {
@@ -445,7 +415,7 @@ export default function App() {
       {/* NAV */}
       <nav style={{ position: "fixed", top: 0, left: 0, right: 0, zIndex: 50, padding: "17px 28px", display: "flex", justifyContent: "space-between", alignItems: "center", borderBottom: "1px solid #0c0c0c", background: "rgba(8,8,8,0.96)", backdropFilter: "blur(14px)" }}>
         <div style={{ display: "flex", alignItems: "center", gap: 9 }}>
-          <span style={{ width: 7, height: 7, borderRadius: "50%", background: ac, display: "inline-block", boxShadow: `0 0 9px ${ac}`, animation: "pd 2.5s infinite", transition: "background .3s, box-shadow .3s" }} />
+          <span style={{ width: 7, height: 7, borderRadius: "50%", background: ac, display: "inline-block", boxShadow: `0 0 9px ${ac}`, animation: "pd 2.5s infinite", transition: "background .3s" }} />
           <span style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 19, letterSpacing: "0.2em" }}>LIGHTS</span>
         </div>
         <div style={{ display: "flex", gap: 24 }}>
@@ -460,7 +430,7 @@ export default function App() {
         <div style={{ position: "absolute", top: "5%", right: "-8%", width: 560, height: 560, background: `radial-gradient(circle, ${ac}07 0%, transparent 65%)`, pointerEvents: "none", transition: "background .4s" }} />
         <div style={{ maxWidth: 1100, margin: "0 auto", padding: "0 28px" }}>
           <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 18 }}>
-            <div style={{ width: 26, height: 1, background: ac, transition: "background .3s" }} />
+            <div style={{ width: 26, height: 1, background: ac }} />
             <span style={{ fontSize: 8, letterSpacing: "0.32em", color: ac, textTransform: "uppercase" }}>Growth Platform · Nigeria</span>
           </div>
           <h1 style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: "clamp(68px,12vw,144px)", lineHeight: 0.87, letterSpacing: "-0.01em", marginBottom: 24 }}>
@@ -481,7 +451,7 @@ export default function App() {
           </div>
           <div style={{ display: "flex", gap: 36, marginTop: 56 }}>
             {[["12K+", "Orders"], ["₦", "Naira Pay"], ["< 1hr", "Start Time"]].map(([n, l]) => (
-              <div key={l} style={{ borderLeft: `2px solid ${ac}`, paddingLeft: 14, transition: "border-color .3s" }}>
+              <div key={l} style={{ borderLeft: `2px solid ${ac}`, paddingLeft: 14 }}>
                 <div style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 28 }}>{n}</div>
                 <div style={{ fontSize: 8, color: "#2e2e2e", letterSpacing: "0.2em", textTransform: "uppercase", marginTop: 2 }}>{l}</div>
               </div>
@@ -560,7 +530,7 @@ export default function App() {
                   {[["⚡", "Starts within minutes"], ["🔒", "No password needed"], ["₦", "OPay · GTB · Access · Zenith · UBA · ALAT"]].map(([i, t]) => (
                     <div key={t} style={{ display: "flex", gap: 9, alignItems: "flex-start" }}>
                       <span style={{ fontSize: 10 }}>{i}</span>
-                      <span style={{ fontSize: 9, color: "#2e2e2e", letterSpacing: "0.04em", lineHeight: 1.5 }}>{t}</span>
+                      <span style={{ fontSize: 9, color: "#2e2e2e", lineHeight: 1.5 }}>{t}</span>
                     </div>
                   ))}
                 </div>
@@ -585,7 +555,7 @@ export default function App() {
                 onMouseOut={e => e.currentTarget.style.borderColor = "#0c0c0c"}>
                 <div style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 52, color: ac, opacity: 0.18, lineHeight: 1, marginBottom: 14 }}>{n}</div>
                 <div style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 19, letterSpacing: "0.04em", marginBottom: 9 }}>{t}</div>
-                <div style={{ fontSize: 10, color: "#333", lineHeight: 1.8, letterSpacing: "0.03em" }}>{d}</div>
+                <div style={{ fontSize: 10, color: "#333", lineHeight: 1.8 }}>{d}</div>
               </div>
             ))}
           </div>
@@ -599,9 +569,7 @@ export default function App() {
         <button className="nl" onClick={() => setPage("admin")} style={{ color: ac }}>Admin ↗</button>
       </footer>
 
-      {pendingOrder && (
-        <PaymentModal order={pendingOrder} onClose={() => setPendingOrder(null)} onConfirmed={handlePaymentConfirmed} />
-      )}
+      {pendingOrder && <PaymentModal order={pendingOrder} onClose={() => setPendingOrder(null)} onConfirmed={handlePaymentConfirmed} />}
     </div>
   );
 }
