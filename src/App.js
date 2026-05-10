@@ -36,11 +36,9 @@ function formatNaira(n) { return "₦" + n.toLocaleString("en-NG"); }
 function genOrderId() { return "LGT-" + Date.now().toString(36).toUpperCase(); }
 
 // ── PAYMENT MODAL ─────────────────────────────────────────────────────────────
-function PaymentModal({ order, onClose, onConfirmed }) {
+function PaymentModal({ order, onClose }) {
   const [step, setStep] = useState("loading");
-  const [bankInfo, setBankInfo] = useState(null);
   const [error, setError] = useState(null);
-  const timerRef = useRef(null);
   const ac = order.platform === "youtube" ? "#ff3939" : "#39ff14";
 
   useEffect(() => {
@@ -55,31 +53,11 @@ function PaymentModal({ order, onClose, onConfirmed }) {
       .then(r => r.json())
       .then(data => {
         if (data.error) { setError(data.error); setStep("error"); return; }
-        setBankInfo(data);
-        setStep("waiting");
-        startPolling();
+        // Redirect to Paystack payment page
+        window.location.href = data.authorization_url;
       })
       .catch(() => { setError("Could not connect to server. Try again."); setStep("error"); });
   }, []);
-
-  const startPolling = () => {
-    let attempts = 0;
-    timerRef.current = setInterval(async () => {
-      attempts++;
-      try {
-        const res = await fetch(`${BACKEND}/order/${order.id}`);
-        const data = await res.json();
-        if (data.status >= 1) {
-          clearInterval(timerRef.current);
-          setStep("confirmed");
-          setTimeout(onConfirmed, 1800);
-        }
-      } catch (e) { }
-      if (attempts > 120) clearInterval(timerRef.current);
-    }, 5000);
-  };
-
-  useEffect(() => () => clearInterval(timerRef.current), []);
 
   return (
     <div style={{ position: "fixed", inset: 0, zIndex: 200, background: "rgba(0,0,0,0.93)", backdropFilter: "blur(10px)", display: "flex", alignItems: "center", justifyContent: "center", padding: 24 }}>
@@ -88,8 +66,9 @@ function PaymentModal({ order, onClose, onConfirmed }) {
 
         {step === "loading" && (
           <div style={{ textAlign: "center", padding: "40px 0" }}>
-            <div style={{ fontSize: 9, color: ac, letterSpacing: "0.25em", textTransform: "uppercase", marginBottom: 16 }}>Generating Account</div>
-            <div style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 28, color: "#555" }}>Please wait...</div>
+            <div style={{ fontSize: 9, color: ac, letterSpacing: "0.25em", textTransform: "uppercase", marginBottom: 16 }}>Preparing Payment</div>
+            <div style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 28, color: "#555", marginBottom: 16 }}>Please wait...</div>
+            <div style={{ fontSize: 10, color: "#333" }}>You'll be redirected to Paystack to complete your payment securely.</div>
           </div>
         )}
 
@@ -97,35 +76,6 @@ function PaymentModal({ order, onClose, onConfirmed }) {
           <div style={{ textAlign: "center", padding: "40px 0" }}>
             <div style={{ color: "#ff3939", fontSize: 13, marginBottom: 16 }}>{error}</div>
             <button onClick={onClose} style={{ background: "#ff3939", color: "#000", border: "none", padding: "12px 24px", fontFamily: "'Bebas Neue', sans-serif", fontSize: 16, cursor: "pointer" }}>Close</button>
-          </div>
-        )}
-
-        {step === "waiting" && bankInfo && <>
-          <div style={{ fontSize: 9, letterSpacing: "0.25em", color: ac, textTransform: "uppercase", marginBottom: 8 }}>Transfer Details</div>
-          <div style={{ fontSize: 11, color: "#444", marginBottom: 24 }}>{order.qty.toLocaleString()} {order.service} · {order.platform === "tiktok" ? "TikTok" : "YouTube"}</div>
-          <div style={{ background: "#111", border: `1px solid ${ac}22`, padding: 24, marginBottom: 24 }}>
-            <div style={{ fontSize: 9, color: "#333", letterSpacing: "0.2em", textTransform: "uppercase", marginBottom: 6 }}>Bank</div>
-            <div style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 20, marginBottom: 18 }}>{bankInfo.bank}</div>
-            <div style={{ fontSize: 9, color: "#333", letterSpacing: "0.2em", textTransform: "uppercase", marginBottom: 6 }}>Account Number</div>
-            <div style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 38, color: ac, letterSpacing: "0.08em", marginBottom: 18 }}>{bankInfo.accountNumber}</div>
-            {bankInfo.accountName && <>
-              <div style={{ fontSize: 9, color: "#333", letterSpacing: "0.2em", textTransform: "uppercase", marginBottom: 6 }}>Account Name</div>
-              <div style={{ fontSize: 13, color: "#888", marginBottom: 18 }}>{bankInfo.accountName}</div>
-            </>}
-            <div style={{ fontSize: 9, color: "#333", letterSpacing: "0.2em", textTransform: "uppercase", marginBottom: 6 }}>Amount</div>
-            <div style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 28 }}>{formatNaira(order.price)}</div>
-          </div>
-          <div style={{ textAlign: "center", fontSize: 10, color: "#444", lineHeight: 1.7 }}>
-            Transfer the exact amount to the account above.<br />
-            <span style={{ color: ac }}>Page updates automatically once payment is received.</span>
-          </div>
-        </>}
-
-        {step === "confirmed" && (
-          <div style={{ textAlign: "center", padding: "32px 0" }}>
-            <div style={{ fontSize: 44, marginBottom: 14, color: ac }}>✓</div>
-            <div style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 30, color: ac, marginBottom: 8 }}>Payment Confirmed</div>
-            <div style={{ fontSize: 11, color: "#444" }}>Taking you to your order tracker...</div>
           </div>
         )}
       </div>
@@ -372,6 +322,17 @@ export default function App() {
   const [trackId, setTrackId] = useState(null);
   const [adminToken, setAdminToken] = useState(() => localStorage.getItem(ADMIN_PASSWORD_KEY));
 
+  // Check if returning from Paystack payment
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const ref = params.get("reference") || params.get("trxref");
+    if (ref) {
+      window.history.replaceState({}, "", window.location.pathname);
+      setTrackId(ref.toUpperCase());
+      setPage("tracker");
+    }
+  }, []);
+
   const cp = PLATFORMS[platform];
   const ac = cp.color;
   const cs = cp.services.find(s => s.id === activeServiceId) || cp.services[0];
@@ -381,12 +342,6 @@ export default function App() {
   const handlePlaceOrder = () => {
     if (!selectedTier || !username.trim()) return;
     setPendingOrder({ id: genOrderId(), platform, service: cs.label, qty: selectedTier.qty, price: selectedTier.price, username: username.trim() });
-  };
-
-  const handlePaymentConfirmed = () => {
-    const id = pendingOrder?.id;
-    setPendingOrder(null); setUsername(""); setSelectedTier(null);
-    setTrackId(id); setPage("tracker");
   };
 
   const handleAdminLogin = (token) => { setAdminToken(token); setPage("admin"); };
@@ -439,7 +394,7 @@ export default function App() {
             LIGHTS.
           </h1>
           <p style={{ maxWidth: 400, color: "#3e3e3e", fontSize: 11, lineHeight: 1.9, letterSpacing: "0.04em", marginBottom: 32 }}>
-            TikTok & YouTube growth tools. Followers, likes, views, reposts, subscribers — delivered fast. Pay in Naira via OPay, GTB, Access & more.
+            TikTok & YouTube growth tools. Followers, likes, views, reposts, subscribers — delivered fast. Pay in Naira via card or bank transfer.
           </p>
           <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
             <button onClick={() => document.getElementById("svc")?.scrollIntoView({ behavior: "smooth" })} style={{ background: ac, color: "#000", border: "none", padding: "12px 26px", fontFamily: "'Bebas Neue', sans-serif", fontSize: 15, letterSpacing: "0.1em", cursor: "pointer", transition: "all .3s" }}
@@ -527,7 +482,7 @@ export default function App() {
                   {selectedTier ? `Pay ${formatNaira(selectedTier.price)}` : "Select a Package"}
                 </button>
                 <div style={{ marginTop: 18, display: "flex", flexDirection: "column", gap: 7 }}>
-                  {[["⚡", "Starts within minutes"], ["🔒", "No password needed"], ["₦", "OPay · GTB · Access · Zenith · UBA · ALAT"]].map(([i, t]) => (
+                  {[["⚡", "Starts within minutes"], ["🔒", "No password needed"], ["💳", "Pay securely via Paystack — card or bank transfer"]].map(([i, t]) => (
                     <div key={t} style={{ display: "flex", gap: 9, alignItems: "flex-start" }}>
                       <span style={{ fontSize: 10 }}>{i}</span>
                       <span style={{ fontSize: 9, color: "#2e2e2e", lineHeight: 1.5 }}>{t}</span>
@@ -549,7 +504,7 @@ export default function App() {
           </div>
           <h2 style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 42, marginBottom: 44 }}>THREE STEPS.</h2>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 2 }}>
-            {[["01", "Pick your package", "Choose platform, service type, and quantity from TikTok or YouTube."], ["02", "Pay in Naira", "Select your bank — OPay, GTB, Access, Zenith, UBA or ALAT. Get a virtual account and transfer instantly."], ["03", "Track it live", "Watch your order move through each step in real time on the tracker page."]].map(([n, t, d]) => (
+            {[["01", "Pick your package", "Choose platform, service type, and quantity from TikTok or YouTube."], ["02", "Pay securely", "You'll be redirected to Paystack to pay via card or bank transfer. Fast and secure."], ["03", "Track it live", "After payment you'll be redirected back to track your order in real time."]].map(([n, t, d]) => (
               <div key={n} style={{ padding: "32px 24px", border: "1px solid #0c0c0c", background: "#080808", transition: "border-color .2s" }}
                 onMouseOver={e => e.currentTarget.style.borderColor = ac + "1e"}
                 onMouseOut={e => e.currentTarget.style.borderColor = "#0c0c0c"}>
@@ -569,7 +524,8 @@ export default function App() {
         <button className="nl" onClick={() => setPage("admin")} style={{ color: ac }}>Admin ↗</button>
       </footer>
 
-      {pendingOrder && <PaymentModal order={pendingOrder} onClose={() => setPendingOrder(null)} onConfirmed={handlePaymentConfirmed} />}
+      {pendingOrder && <PaymentModal order={pendingOrder} onClose={() => setPendingOrder(null)} />}
     </div>
   );
 }
+
