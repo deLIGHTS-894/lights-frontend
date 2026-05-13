@@ -27,6 +27,28 @@ const PLATFORMS = {
         tiers: [{ qty: 100, price: 360 }, { qty: 500, price: 1800 }, { qty: 1000, price: 3600 }, { qty: 5000, price: 18000 }, { qty: 10000, price: 36000 }] },
     ],
   },
+  twitter: {
+    label: "Twitter/X", icon: "✕", color: "#1d9bf0",
+    services: [
+      { id: "tw_followers", label: "Followers", icon: "◎", desc: "Grow your Twitter/X following and boost your profile authority fast.",
+        tiers: [{ qty: 100, price: 234 }, { qty: 500, price: 1168 }, { qty: 1000, price: 2336 }, { qty: 5000, price: 11680 }, { qty: 10000, price: 23360 }] },
+      { id: "tw_likes", label: "Likes", icon: "◈", desc: "Increase your tweet like count and boost engagement signals.",
+        tiers: [{ qty: 100, price: 346 }, { qty: 500, price: 1728 }, { qty: 1000, price: 3456 }, { qty: 5000, price: 17280 }, { qty: 10000, price: 34560 }] },
+      { id: "tw_retweets", label: "Retweets", icon: "◫", desc: "Amplify your tweets and expand your reach across Twitter/X.",
+        tiers: [{ qty: 100, price: 317 }, { qty: 500, price: 1584 }, { qty: 1000, price: 3168 }, { qty: 5000, price: 15840 }, { qty: 10000, price: 31680 }] },
+    ],
+  },
+  instagram: {
+    label: "Instagram", icon: "◑", color: "#e1306c",
+    services: [
+      { id: "ig_followers", label: "Followers", icon: "◎", desc: "Boost your Instagram profile with real-looking followers delivered fast.",
+        tiers: [{ qty: 100, price: 90 }, { qty: 500, price: 448 }, { qty: 1000, price: 896 }, { qty: 5000, price: 4480 }, { qty: 10000, price: 8960 }] },
+      { id: "ig_likes", label: "Likes", icon: "◈", desc: "Increase your post like count and improve Instagram ranking.",
+        tiers: [{ qty: 100, price: 24 }, { qty: 500, price: 120 }, { qty: 1000, price: 240 }, { qty: 5000, price: 1200 }, { qty: 10000, price: 2400 }] },
+      { id: "ig_views", label: "Views", icon: "◉", desc: "Boost your Instagram video and reel view counts instantly.",
+        tiers: [{ qty: 10000, price: 45 }, { qty: 50000, price: 224 }, { qty: 100000, price: 448 }, { qty: 500000, price: 2240 }, { qty: 1000000, price: 4480 }] },
+    ],
+  },
 };
 
 const STATUS_STEPS = ["Order Received", "Payment Confirmed", "Processing", "Delivering", "Completed"];
@@ -39,7 +61,7 @@ function genOrderId() { return "LGT-" + Date.now().toString(36).toUpperCase(); }
 function PaymentModal({ order, onClose }) {
   const [step, setStep] = useState("loading");
   const [error, setError] = useState(null);
-  const ac = order.platform === "youtube" ? "#ff3939" : "#39ff14";
+  const ac = PLATFORMS[order.platform]?.color || "#39ff14";
 
   useEffect(() => {
     fetch(`${BACKEND}/create-order`, {
@@ -53,7 +75,6 @@ function PaymentModal({ order, onClose }) {
       .then(r => r.json())
       .then(data => {
         if (data.error) { setError(data.error); setStep("error"); return; }
-        // Redirect to Paystack payment page
         window.location.href = data.authorization_url;
       })
       .catch(() => { setError("Could not connect to server. Try again."); setStep("error"); });
@@ -63,7 +84,6 @@ function PaymentModal({ order, onClose }) {
     <div style={{ position: "fixed", inset: 0, zIndex: 200, background: "rgba(0,0,0,0.93)", backdropFilter: "blur(10px)", display: "flex", alignItems: "center", justifyContent: "center", padding: 24 }}>
       <div style={{ background: "#0c0c0c", border: `1px solid ${ac}33`, width: "100%", maxWidth: 460, padding: 36, position: "relative" }}>
         <button onClick={onClose} style={{ position: "absolute", top: 14, right: 18, background: "none", border: "none", color: "#444", fontSize: 20, cursor: "pointer" }}>✕</button>
-
         {step === "loading" && (
           <div style={{ textAlign: "center", padding: "40px 0" }}>
             <div style={{ fontSize: 9, color: ac, letterSpacing: "0.25em", textTransform: "uppercase", marginBottom: 16 }}>Preparing Payment</div>
@@ -71,7 +91,6 @@ function PaymentModal({ order, onClose }) {
             <div style={{ fontSize: 10, color: "#333" }}>You'll be redirected to Paystack to complete your payment securely.</div>
           </div>
         )}
-
         {step === "error" && (
           <div style={{ textAlign: "center", padding: "40px 0" }}>
             <div style={{ color: "#ff3939", fontSize: 13, marginBottom: 16 }}>{error}</div>
@@ -120,7 +139,7 @@ function OrderTracker({ initId, onBack }) {
     return () => clearInterval(intervalRef.current);
   }, [order?.id, order?.status]);
 
-  const ac = order?.platform === "youtube" ? "#ff3939" : "#39ff14";
+  const ac = order ? (PLATFORMS[order.platform]?.color || "#39ff14") : "#39ff14";
 
   return (
     <div style={{ minHeight: "100vh", background: "#080808", color: "#f0f0f0", fontFamily: "'DM Mono', monospace", paddingTop: 80 }}>
@@ -252,8 +271,13 @@ function AdminDashboard({ token, onLogout }) {
   const totalRev = orders.reduce((s, o) => s + (o.price || 0), 0);
   const completed = orders.filter(o => o.status === STATUS_STEPS.length - 1).length;
   const processing = orders.filter(o => o.status > 0 && o.status < STATUS_STEPS.length - 1).length;
-  const ttRev = orders.filter(o => o.platform === "tiktok").reduce((s, o) => s + (o.price || 0), 0);
-  const ytRev = orders.filter(o => o.platform === "youtube").reduce((s, o) => s + (o.price || 0), 0);
+
+  const platformRevenue = Object.keys(PLATFORMS).map(p => ({
+    key: p,
+    label: PLATFORMS[p].label,
+    color: PLATFORMS[p].color,
+    rev: orders.filter(o => o.platform === p).reduce((s, o) => s + (o.price || 0), 0)
+  }));
 
   return (
     <div style={{ minHeight: "100vh", background: "#050505", color: "#f0f0f0", fontFamily: "'DM Mono', monospace" }}>
@@ -275,11 +299,11 @@ function AdminDashboard({ token, onLogout }) {
             </div>
           ))}
         </div>
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 36 }}>
-          {[["TikTok Revenue", ttRev, "#39ff14"], ["YouTube Revenue", ytRev, "#ff3939"]].map(([l, v, c]) => (
-            <div key={l} style={{ background: "#0b0b0b", border: `1px solid ${c}18`, padding: "18px 22px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-              <div style={{ fontSize: 9, color: "#444", letterSpacing: "0.18em", textTransform: "uppercase" }}>{l}</div>
-              <div style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 26, color: c }}>{formatNaira(v)}</div>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 12, marginBottom: 36 }}>
+          {platformRevenue.map(({ key, label, color, rev }) => (
+            <div key={key} style={{ background: "#0b0b0b", border: `1px solid ${color}18`, padding: "16px 18px" }}>
+              <div style={{ fontSize: 8, color: "#444", letterSpacing: "0.15em", textTransform: "uppercase", marginBottom: 8 }}>{label}</div>
+              <div style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 22, color }}>{formatNaira(rev)}</div>
             </div>
           ))}
         </div>
@@ -293,10 +317,11 @@ function AdminDashboard({ token, onLogout }) {
               </div>
               {orders.map(o => {
                 const sc = o.status === STATUS_STEPS.length - 1 ? "#39ff14" : o.status > 0 ? "#ffaa00" : "#444";
+                const pc = PLATFORMS[o.platform]?.color || "#888";
                 return (
                   <div key={o.id} className="arow" style={{ display: "grid", gridTemplateColumns: "1.6fr 0.8fr 0.8fr 0.7fr 1fr 1fr", padding: "15px 18px", fontSize: 11, alignItems: "center" }}>
                     <div style={{ color: "#39ff14", fontFamily: "'Bebas Neue', sans-serif", fontSize: 14 }}>{o.id}</div>
-                    <div style={{ color: o.platform === "youtube" ? "#ff3939" : "#39ff14", textTransform: "capitalize", fontSize: 10 }}>{o.platform}</div>
+                    <div style={{ color: pc, textTransform: "capitalize", fontSize: 10 }}>{o.platform}</div>
                     <div style={{ color: "#888" }}>{o.service}</div>
                     <div style={{ color: "#666" }}>{o.qty?.toLocaleString()}</div>
                     <div style={{ color: "#ccc" }}>{formatNaira(o.price)}</div>
@@ -322,7 +347,6 @@ export default function App() {
   const [trackId, setTrackId] = useState(null);
   const [adminToken, setAdminToken] = useState(() => localStorage.getItem(ADMIN_PASSWORD_KEY));
 
-  // Check if returning from Paystack payment
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const ref = params.get("reference") || params.get("trxref");
@@ -364,7 +388,8 @@ export default function App() {
         @keyframes fi{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
         .fi{animation:fi .35s ease forwards}
         @keyframes pd{0%,100%{opacity:1}50%{opacity:.25}}
-        @media(max-width:700px){.g2{grid-template-columns:1fr!important}.ps{flex-direction:column}}
+        .plat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:0}
+        @media(max-width:700px){.g2{grid-template-columns:1fr!important}.plat-grid{grid-template-columns:repeat(2,1fr)}}
       `}</style>
 
       {/* NAV */}
@@ -393,8 +418,8 @@ export default function App() {
             <span style={{ color: ac, textShadow: `0 0 50px ${ac}44`, transition: "all .3s" }}>YOUR</span><br />
             LIGHTS.
           </h1>
-          <p style={{ maxWidth: 400, color: "#3e3e3e", fontSize: 11, lineHeight: 1.9, letterSpacing: "0.04em", marginBottom: 32 }}>
-            TikTok & YouTube growth tools. Followers, likes, views, reposts, subscribers — delivered fast. Pay in Naira via card or bank transfer.
+          <p style={{ maxWidth: 420, color: "#3e3e3e", fontSize: 11, lineHeight: 1.9, letterSpacing: "0.04em", marginBottom: 32 }}>
+            TikTok, YouTube, Twitter/X & Instagram growth tools. Followers, likes, views and more — delivered fast. Pay in Naira.
           </p>
           <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
             <button onClick={() => document.getElementById("svc")?.scrollIntoView({ behavior: "smooth" })} style={{ background: ac, color: "#000", border: "none", padding: "12px 26px", fontFamily: "'Bebas Neue', sans-serif", fontSize: 15, letterSpacing: "0.1em", cursor: "pointer", transition: "all .3s" }}
@@ -405,7 +430,7 @@ export default function App() {
               onMouseOut={e => { e.currentTarget.style.borderColor = "#141414"; e.currentTarget.style.color = "#444"; }}>Track Order</button>
           </div>
           <div style={{ display: "flex", gap: 36, marginTop: 56 }}>
-            {[["12K+", "Orders"], ["₦", "Naira Pay"], ["< 1hr", "Start Time"]].map(([n, l]) => (
+            {[["4", "Platforms"], ["₦", "Naira Pay"], ["< 1hr", "Start Time"]].map(([n, l]) => (
               <div key={l} style={{ borderLeft: `2px solid ${ac}`, paddingLeft: 14 }}>
                 <div style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 28 }}>{n}</div>
                 <div style={{ fontSize: 8, color: "#2e2e2e", letterSpacing: "0.2em", textTransform: "uppercase", marginTop: 2 }}>{l}</div>
@@ -424,14 +449,16 @@ export default function App() {
           </div>
           <h2 style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 42, marginBottom: 32 }}>CHOOSE YOUR BOOST</h2>
 
-          <div className="ps" style={{ display: "flex", marginBottom: 28 }}>
+          {/* Platform grid */}
+          <div className="plat-grid" style={{ marginBottom: 28 }}>
             {Object.entries(PLATFORMS).map(([key, p]) => (
-              <button key={key} onClick={() => switchPlatform(key)} style={{ background: platform === key ? p.color + "10" : "transparent", border: `1px solid ${platform === key ? p.color : "#141414"}`, color: platform === key ? p.color : "#383838", padding: "11px 24px", cursor: "pointer", fontFamily: "'Bebas Neue', sans-serif", fontSize: 17, letterSpacing: "0.1em", transition: "all .2s", display: "flex", alignItems: "center", gap: 9 }}>
+              <button key={key} onClick={() => switchPlatform(key)} style={{ background: platform === key ? p.color + "10" : "transparent", border: `1px solid ${platform === key ? p.color : "#141414"}`, color: platform === key ? p.color : "#383838", padding: "11px 16px", cursor: "pointer", fontFamily: "'Bebas Neue', sans-serif", fontSize: 15, letterSpacing: "0.08em", transition: "all .2s", display: "flex", alignItems: "center", gap: 7, justifyContent: "center" }}>
                 <span>{p.icon}</span>{p.label}
               </button>
             ))}
           </div>
 
+          {/* Service tabs */}
           <div style={{ display: "flex", flexWrap: "wrap", marginBottom: 36 }}>
             {cp.services.map(s => (
               <button key={s.id} className="st"
@@ -482,7 +509,7 @@ export default function App() {
                   {selectedTier ? `Pay ${formatNaira(selectedTier.price)}` : "Select a Package"}
                 </button>
                 <div style={{ marginTop: 18, display: "flex", flexDirection: "column", gap: 7 }}>
-                  {[["⚡", "Starts within minutes"], ["🔒", "No password needed"], ["💳", "Pay securely via Paystack — card or bank transfer"]].map(([i, t]) => (
+                  {[["⚡", "Starts within minutes"], ["🔒", "No password needed"], ["💳", "Pay securely via Paystack"]].map(([i, t]) => (
                     <div key={t} style={{ display: "flex", gap: 9, alignItems: "flex-start" }}>
                       <span style={{ fontSize: 10 }}>{i}</span>
                       <span style={{ fontSize: 9, color: "#2e2e2e", lineHeight: 1.5 }}>{t}</span>
@@ -504,7 +531,7 @@ export default function App() {
           </div>
           <h2 style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 42, marginBottom: 44 }}>THREE STEPS.</h2>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 2 }}>
-            {[["01", "Pick your package", "Choose platform, service type, and quantity from TikTok or YouTube."], ["02", "Pay securely", "You'll be redirected to Paystack to pay via card or bank transfer. Fast and secure."], ["03", "Track it live", "After payment you'll be redirected back to track your order in real time."]].map(([n, t, d]) => (
+            {[["01", "Pick your package", "Choose platform, service type, and quantity from TikTok, YouTube, Twitter/X or Instagram."], ["02", "Pay securely", "You'll be redirected to Paystack to pay via card or bank transfer. Fast and secure."], ["03", "Track it live", "After payment you'll be redirected back to track your order in real time."]].map(([n, t, d]) => (
               <div key={n} style={{ padding: "32px 24px", border: "1px solid #0c0c0c", background: "#080808", transition: "border-color .2s" }}
                 onMouseOver={e => e.currentTarget.style.borderColor = ac + "1e"}
                 onMouseOut={e => e.currentTarget.style.borderColor = "#0c0c0c"}>
@@ -528,4 +555,3 @@ export default function App() {
     </div>
   );
 }
-
