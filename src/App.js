@@ -14,6 +14,10 @@ const PLATFORMS = {
         tiers: [{ qty: 1000, price: 320 }, { qty: 5000, price: 1600 }, { qty: 10000, price: 3200 }, { qty: 50000, price: 16000 }, { qty: 100000, price: 32000 }] },
       { id: "tt_reposts", label: "Reposts", icon: "◫", desc: "Spread your content across TikTok networks and expand reach.",
         tiers: [{ qty: 50, price: 40 }, { qty: 100, price: 80 }, { qty: 500, price: 400 }, { qty: 1000, price: 800 }, { qty: 5000, price: 4000 }] },
+      { id: "tt_comments", label: "Comments", icon: "◑", desc: "Post custom comments on your TikTok videos. Type exactly what you want to appear.", hasComment: true,
+        tiers: [{ qty: 10, price: 60 }, { qty: 50, price: 300 }, { qty: 100, price: 600 }, { qty: 500, price: 3000 }, { qty: 1000, price: 6000 }] },
+      { id: "tt_live", label: "Live Views", icon: "◈", desc: "Boost your TikTok livestream views instantly. Stays for 60 minutes.",
+        tiers: [{ qty: 100, price: 1440 }, { qty: 500, price: 7200 }, { qty: 1000, price: 14400 }, { qty: 5000, price: 72000 }, { qty: 10000, price: 144000 }] },
     ],
   },
   youtube: {
@@ -25,6 +29,8 @@ const PLATFORMS = {
         tiers: [{ qty: 100, price: 250 }, { qty: 500, price: 1250 }, { qty: 1000, price: 2500 }, { qty: 5000, price: 12500 }, { qty: 10000, price: 25000 }] },
       { id: "yt_shares", label: "Shares", icon: "◫", desc: "Amplify your video reach across platforms with share boosts.",
         tiers: [{ qty: 100, price: 360 }, { qty: 500, price: 1800 }, { qty: 1000, price: 3600 }, { qty: 5000, price: 18000 }, { qty: 10000, price: 36000 }] },
+      { id: "yt_comments", label: "Comments", icon: "◑", desc: "Post custom comments on your YouTube videos. USA accounts with lifetime guarantee.", hasComment: true,
+        tiers: [{ qty: 5, price: 480 }, { qty: 10, price: 960 }, { qty: 20, price: 1920 }, { qty: 50, price: 4800 }, { qty: 100, price: 9600 }] },
     ],
   },
   twitter: {
@@ -36,6 +42,8 @@ const PLATFORMS = {
         tiers: [{ qty: 100, price: 346 }, { qty: 500, price: 1728 }, { qty: 1000, price: 3456 }, { qty: 5000, price: 17280 }, { qty: 10000, price: 34560 }] },
       { id: "tw_retweets", label: "Retweets", icon: "◫", desc: "Amplify your tweets and expand your reach across Twitter/X.",
         tiers: [{ qty: 100, price: 317 }, { qty: 500, price: 1584 }, { qty: 1000, price: 3168 }, { qty: 5000, price: 15840 }, { qty: 10000, price: 31680 }] },
+      { id: "tw_comments", label: "Comments", icon: "◑", desc: "Post custom comments on your tweets from real-looking accounts.", hasComment: true,
+        tiers: [{ qty: 5, price: 300 }, { qty: 10, price: 600 }, { qty: 20, price: 1200 }, { qty: 50, price: 3000 }, { qty: 100, price: 6000 }] },
     ],
   },
   instagram: {
@@ -47,6 +55,25 @@ const PLATFORMS = {
         tiers: [{ qty: 100, price: 24 }, { qty: 500, price: 120 }, { qty: 1000, price: 240 }, { qty: 5000, price: 1200 }, { qty: 10000, price: 2400 }] },
       { id: "ig_views", label: "Views", icon: "◉", desc: "Boost your Instagram video and reel view counts instantly.",
         tiers: [{ qty: 10000, price: 45 }, { qty: 50000, price: 224 }, { qty: 100000, price: 448 }, { qty: 500000, price: 2240 }, { qty: 1000000, price: 4480 }] },
+      { id: "ig_comments", label: "Comments", icon: "◑", desc: "Post custom comments on your Instagram posts from female accounts.", hasComment: true,
+        tiers: [{ qty: 5, price: 600 }, { qty: 10, price: 1200 }, { qty: 20, price: 2400 }, { qty: 50, price: 6000 }, { qty: 100, price: 12000 }] },
+    ],
+  },
+  facebook: {
+    label: "Facebook", icon: "f", color: "#1877f2",
+    services: [
+      { id: "fb_page_likes", label: "Page Likes", icon: "◎", desc: "Grow your Facebook page with real-looking likes. Lifetime refill guarantee.",
+        tiers: [{ qty: 100, price: 328 }, { qty: 500, price: 1640 }, { qty: 1000, price: 3280 }, { qty: 5000, price: 16400 }, { qty: 10000, price: 32800 }] },
+      { id: "fb_post_likes", label: "Post Likes ❤️", icon: "◈", desc: "Boost your Facebook post with love reactions from real-looking accounts.",
+        tiers: [{ qty: 100, price: 54 }, { qty: 500, price: 269 }, { qty: 1000, price: 538 }, { qty: 5000, price: 2688 }, { qty: 10000, price: 5376 }] },
+      { id: "fb_reels_views", label: "Reels Views", icon: "◉", desc: "Boost your Facebook reels view count fast and trigger the algorithm.",
+        tiers: [{ qty: 10000, price: 68 }, { qty: 50000, price: 340 }, { qty: 100000, price: 680 }, { qty: 500000, price: 3400 }, { qty: 1000000, price: 6800 }] },
+      { id: "fb_live_views", label: "Live Views", icon: "◉", desc: "Boost your Facebook livestream views instantly for 300 minutes.",
+        tiers: [{ qty: 100, price: 4797 }, { qty: 500, price: 23985 }, { qty: 1000, price: 47970 }, { qty: 2000, price: 95940 }] },
+      { id: "fb_comments", label: "Comments", icon: "◑", desc: "Post custom comments on your Facebook posts from real-looking accounts.", hasComment: true,
+        tiers: [{ qty: 10, price: 64 }, { qty: 50, price: 320 }, { qty: 100, price: 640 }, { qty: 500, price: 3200 }, { qty: 1000, price: 6400 }] },
+      { id: "fb_random_comments", label: "Random Comments", icon: "◑", desc: "Get random engaging comments posted on your Facebook posts automatically.",
+        tiers: [{ qty: 10, price: 64 }, { qty: 50, price: 320 }, { qty: 100, price: 640 }, { qty: 500, price: 3200 }, { qty: 1000, price: 6400 }] },
     ],
   },
 };
@@ -70,6 +97,7 @@ function PaymentModal({ order, onClose }) {
       body: JSON.stringify({
         id: order.id, platform: order.platform, service: order.service,
         qty: order.qty, price: order.price, username: order.username,
+        comment: order.comment || "",
       }),
     })
       .then(r => r.json())
@@ -271,11 +299,8 @@ function AdminDashboard({ token, onLogout }) {
   const totalRev = orders.reduce((s, o) => s + (o.price || 0), 0);
   const completed = orders.filter(o => o.status === STATUS_STEPS.length - 1).length;
   const processing = orders.filter(o => o.status > 0 && o.status < STATUS_STEPS.length - 1).length;
-
   const platformRevenue = Object.keys(PLATFORMS).map(p => ({
-    key: p,
-    label: PLATFORMS[p].label,
-    color: PLATFORMS[p].color,
+    key: p, label: PLATFORMS[p].label, color: PLATFORMS[p].color,
     rev: orders.filter(o => o.platform === p).reduce((s, o) => s + (o.price || 0), 0)
   }));
 
@@ -299,11 +324,11 @@ function AdminDashboard({ token, onLogout }) {
             </div>
           ))}
         </div>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 12, marginBottom: 36 }}>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(5, 1fr)", gap: 12, marginBottom: 36 }}>
           {platformRevenue.map(({ key, label, color, rev }) => (
-            <div key={key} style={{ background: "#0b0b0b", border: `1px solid ${color}18`, padding: "16px 18px" }}>
+            <div key={key} style={{ background: "#0b0b0b", border: `1px solid ${color}18`, padding: "14px 16px" }}>
               <div style={{ fontSize: 8, color: "#444", letterSpacing: "0.15em", textTransform: "uppercase", marginBottom: 8 }}>{label}</div>
-              <div style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 22, color }}>{formatNaira(rev)}</div>
+              <div style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 20, color }}>{formatNaira(rev)}</div>
             </div>
           ))}
         </div>
@@ -312,17 +337,17 @@ function AdminDashboard({ token, onLogout }) {
           : orders.length === 0 ? <div style={{ color: "#222", fontSize: 12, padding: "48px 0" }}>No orders yet.</div>
           : (
             <div style={{ border: "1px solid #111", overflow: "hidden" }}>
-              <div style={{ display: "grid", gridTemplateColumns: "1.6fr 0.8fr 0.8fr 0.7fr 1fr 1fr", padding: "11px 18px", background: "#090909", fontSize: 8, color: "#2a2a2a", letterSpacing: "0.18em", textTransform: "uppercase" }}>
+              <div style={{ display: "grid", gridTemplateColumns: "1.4fr 0.7fr 0.8fr 0.6fr 0.9fr 0.9fr", padding: "11px 18px", background: "#090909", fontSize: 8, color: "#2a2a2a", letterSpacing: "0.18em", textTransform: "uppercase" }}>
                 {["Order ID", "Platform", "Service", "Qty", "Amount", "Status"].map(h => <div key={h}>{h}</div>)}
               </div>
               {orders.map(o => {
                 const sc = o.status === STATUS_STEPS.length - 1 ? "#39ff14" : o.status > 0 ? "#ffaa00" : "#444";
                 const pc = PLATFORMS[o.platform]?.color || "#888";
                 return (
-                  <div key={o.id} className="arow" style={{ display: "grid", gridTemplateColumns: "1.6fr 0.8fr 0.8fr 0.7fr 1fr 1fr", padding: "15px 18px", fontSize: 11, alignItems: "center" }}>
-                    <div style={{ color: "#39ff14", fontFamily: "'Bebas Neue', sans-serif", fontSize: 14 }}>{o.id}</div>
-                    <div style={{ color: pc, textTransform: "capitalize", fontSize: 10 }}>{o.platform}</div>
-                    <div style={{ color: "#888" }}>{o.service}</div>
+                  <div key={o.id} className="arow" style={{ display: "grid", gridTemplateColumns: "1.4fr 0.7fr 0.8fr 0.6fr 0.9fr 0.9fr", padding: "15px 18px", fontSize: 11, alignItems: "center" }}>
+                    <div style={{ color: "#39ff14", fontFamily: "'Bebas Neue', sans-serif", fontSize: 13 }}>{o.id}</div>
+                    <div style={{ color: pc, textTransform: "capitalize", fontSize: 9 }}>{o.platform}</div>
+                    <div style={{ color: "#888", fontSize: 10 }}>{o.service}</div>
                     <div style={{ color: "#666" }}>{o.qty?.toLocaleString()}</div>
                     <div style={{ color: "#ccc" }}>{formatNaira(o.price)}</div>
                     <div style={{ color: sc, fontSize: 9 }}>{STATUS_STEPS[o.status] || "Unknown"}</div>
@@ -343,6 +368,8 @@ export default function App() {
   const [activeServiceId, setActiveServiceId] = useState("tt_followers");
   const [selectedTier, setSelectedTier] = useState(null);
   const [username, setUsername] = useState("");
+  const [comment, setComment] = useState("");
+  const [commentMode, setCommentMode] = useState("single"); // single | multiple
   const [pendingOrder, setPendingOrder] = useState(null);
   const [trackId, setTrackId] = useState(null);
   const [adminToken, setAdminToken] = useState(() => localStorage.getItem(ADMIN_PASSWORD_KEY));
@@ -360,13 +387,23 @@ export default function App() {
   const cp = PLATFORMS[platform];
   const ac = cp.color;
   const cs = cp.services.find(s => s.id === activeServiceId) || cp.services[0];
+  const isComment = cs.hasComment;
 
-  const switchPlatform = (p) => { setPlatform(p); setActiveServiceId(PLATFORMS[p].services[0].id); setSelectedTier(null); };
+  const switchPlatform = (p) => { setPlatform(p); setActiveServiceId(PLATFORMS[p].services[0].id); setSelectedTier(null); setComment(""); };
+  const switchService = (id) => { setActiveServiceId(id); setSelectedTier(null); setComment(""); };
 
   const handlePlaceOrder = () => {
     if (!selectedTier || !username.trim()) return;
-    setPendingOrder({ id: genOrderId(), platform, service: cs.label, qty: selectedTier.qty, price: selectedTier.price, username: username.trim() });
+    if (isComment && !comment.trim()) return;
+    setPendingOrder({
+      id: genOrderId(), platform, service: cs.label,
+      qty: selectedTier.qty, price: selectedTier.price,
+      username: username.trim(),
+      comment: isComment ? comment.trim() : "",
+    });
   };
+
+  const canOrder = selectedTier && username.trim() && (!isComment || comment.trim());
 
   const handleAdminLogin = (token) => { setAdminToken(token); setPage("admin"); };
   const handleAdminLogout = () => { localStorage.removeItem(ADMIN_PASSWORD_KEY); setAdminToken(null); setPage("home"); };
@@ -381,15 +418,17 @@ export default function App() {
         *{box-sizing:border-box;margin:0;padding:0}
         ::-webkit-scrollbar{width:3px}::-webkit-scrollbar-thumb{background:#39ff14}
         .nl{color:#484848;background:none;border:none;font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.2em;text-transform:uppercase;cursor:pointer;transition:color .2s}.nl:hover{color:#ccc}
-        .st{background:transparent;border:1px solid #141414;color:#383838;padding:11px 18px;cursor:pointer;font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.15em;text-transform:uppercase;transition:all .15s;display:flex;align-items:center;gap:7px}.st:hover{color:#999}
+        .st{background:transparent;border:1px solid #141414;color:#383838;padding:10px 14px;cursor:pointer;font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.12em;text-transform:uppercase;transition:all .15s;display:flex;align-items:center;gap:6px}.st:hover{color:#999}
         .tr{border:1px solid #141414;padding:15px 18px;cursor:pointer;background:#0a0a0a;display:flex;justify-content:space-between;align-items:center;transition:all .15s}.tr:hover{border-color:#222}
         .inf{width:100%;background:#0c0c0c;border:1px solid #1a1a1a;color:#f0f0f0;padding:12px 15px;font-family:'DM Mono',monospace;font-size:12px;outline:none;transition:border-color .2s}.inf:focus{border-color:#272727}.inf::placeholder{color:#252525}
         .obtn{width:100%;border:none;padding:13px;font-family:'Bebas Neue',sans-serif;font-size:17px;letter-spacing:.1em;transition:all .2s}
+        .cmtab{background:transparent;border:1px solid #141414;color:#444;padding:8px 16px;cursor:pointer;font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.12em;text-transform:uppercase;transition:all .15s}
         @keyframes fi{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
         .fi{animation:fi .35s ease forwards}
         @keyframes pd{0%,100%{opacity:1}50%{opacity:.25}}
-        .plat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:0}
-        @media(max-width:700px){.g2{grid-template-columns:1fr!important}.plat-grid{grid-template-columns:repeat(2,1fr)}}
+        .plat-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:0}
+        @media(max-width:800px){.g2{grid-template-columns:1fr!important}.plat-grid{grid-template-columns:repeat(3,1fr)}}
+        @media(max-width:500px){.plat-grid{grid-template-columns:repeat(2,1fr)}}
       `}</style>
 
       {/* NAV */}
@@ -419,7 +458,7 @@ export default function App() {
             LIGHTS.
           </h1>
           <p style={{ maxWidth: 420, color: "#3e3e3e", fontSize: 11, lineHeight: 1.9, letterSpacing: "0.04em", marginBottom: 32 }}>
-            TikTok, YouTube, Twitter/X & Instagram growth tools. Followers, likes, views and more — delivered fast. Pay in Naira.
+            TikTok, YouTube, Twitter/X, Instagram & Facebook growth tools. Followers, likes, views, comments and more — delivered fast. Pay in Naira.
           </p>
           <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
             <button onClick={() => document.getElementById("svc")?.scrollIntoView({ behavior: "smooth" })} style={{ background: ac, color: "#000", border: "none", padding: "12px 26px", fontFamily: "'Bebas Neue', sans-serif", fontSize: 15, letterSpacing: "0.1em", cursor: "pointer", transition: "all .3s" }}
@@ -430,7 +469,7 @@ export default function App() {
               onMouseOut={e => { e.currentTarget.style.borderColor = "#141414"; e.currentTarget.style.color = "#444"; }}>Track Order</button>
           </div>
           <div style={{ display: "flex", gap: 36, marginTop: 56 }}>
-            {[["4", "Platforms"], ["₦", "Naira Pay"], ["< 1hr", "Start Time"]].map(([n, l]) => (
+            {[["5", "Platforms"], ["₦", "Naira Pay"], ["< 1hr", "Start Time"]].map(([n, l]) => (
               <div key={l} style={{ borderLeft: `2px solid ${ac}`, paddingLeft: 14 }}>
                 <div style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 28 }}>{n}</div>
                 <div style={{ fontSize: 8, color: "#2e2e2e", letterSpacing: "0.2em", textTransform: "uppercase", marginTop: 2 }}>{l}</div>
@@ -452,7 +491,7 @@ export default function App() {
           {/* Platform grid */}
           <div className="plat-grid" style={{ marginBottom: 28 }}>
             {Object.entries(PLATFORMS).map(([key, p]) => (
-              <button key={key} onClick={() => switchPlatform(key)} style={{ background: platform === key ? p.color + "10" : "transparent", border: `1px solid ${platform === key ? p.color : "#141414"}`, color: platform === key ? p.color : "#383838", padding: "11px 16px", cursor: "pointer", fontFamily: "'Bebas Neue', sans-serif", fontSize: 15, letterSpacing: "0.08em", transition: "all .2s", display: "flex", alignItems: "center", gap: 7, justifyContent: "center" }}>
+              <button key={key} onClick={() => switchPlatform(key)} style={{ background: platform === key ? p.color + "10" : "transparent", border: `1px solid ${platform === key ? p.color : "#141414"}`, color: platform === key ? p.color : "#383838", padding: "10px 12px", cursor: "pointer", fontFamily: "'Bebas Neue', sans-serif", fontSize: 14, letterSpacing: "0.08em", transition: "all .2s", display: "flex", alignItems: "center", gap: 6, justifyContent: "center" }}>
                 <span>{p.icon}</span>{p.label}
               </button>
             ))}
@@ -463,8 +502,8 @@ export default function App() {
             {cp.services.map(s => (
               <button key={s.id} className="st"
                 style={activeServiceId === s.id ? { borderColor: ac, color: ac, background: ac + "08" } : {}}
-                onClick={() => { setActiveServiceId(s.id); setSelectedTier(null); }}>
-                <span style={{ fontSize: 13 }}>{s.icon}</span>{s.label}
+                onClick={() => switchService(s.id)}>
+                <span style={{ fontSize: 12 }}>{s.icon}</span>{s.label}
               </button>
             ))}
           </div>
@@ -493,21 +532,49 @@ export default function App() {
                 <div style={{ minHeight: 48, marginBottom: 22 }}>
                   {selectedTier ? (
                     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline" }}>
-                      <span style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 26 }}>{selectedTier.qty.toLocaleString()} {cs.label}</span>
+                      <span style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 24 }}>{selectedTier.qty.toLocaleString()} {cs.label}</span>
                       <span style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 22, color: ac }}>{formatNaira(selectedTier.price)}</span>
                     </div>
                   ) : <div style={{ color: "#1e1e1e", fontSize: 11 }}>← Pick a package</div>}
                 </div>
+
                 <div style={{ fontSize: 8, letterSpacing: "0.18em", color: "#272727", textTransform: "uppercase", marginBottom: 8 }}>
-                  {cs.id.includes("followers") || cs.id.includes("subscribers") ? "Username" : "Post URL or Username"}
+                  Post URL or Username
                 </div>
-                <input className="inf" placeholder="@yourusername or paste post URL" value={username} onChange={e => setUsername(e.target.value)} style={{ marginBottom: 10 }} />
+                <input className="inf" placeholder="@yourusername or paste post URL" value={username} onChange={e => setUsername(e.target.value)} style={{ marginBottom: 12 }} />
+
+                {/* Comment section — only shows for comment services */}
+                {isComment && (<>
+                  <div style={{ fontSize: 8, letterSpacing: "0.18em", color: "#272727", textTransform: "uppercase", marginBottom: 8 }}>
+                    Comment Type
+                  </div>
+                  <div style={{ display: "flex", marginBottom: 12 }}>
+                    {[["single", "One comment repeated"], ["multiple", "Multiple comments"]].map(([mode, label]) => (
+                      <button key={mode} className="cmtab"
+                        onClick={() => setCommentMode(mode)}
+                        style={commentMode === mode ? { borderColor: ac, color: ac, background: ac + "08" } : {}}>
+                        {label}
+                      </button>
+                    ))}
+                  </div>
+                  <div style={{ fontSize: 8, letterSpacing: "0.18em", color: "#272727", textTransform: "uppercase", marginBottom: 8 }}>
+                    {commentMode === "single" ? "Your Comment (will be repeated)" : "Your Comments (one per line)"}
+                  </div>
+                  {commentMode === "single" ? (
+                    <input className="inf" placeholder="Type your comment here..." value={comment} onChange={e => setComment(e.target.value)} style={{ marginBottom: 12 }} />
+                  ) : (
+                    <textarea className="inf" placeholder={"Comment one\nComment two\nComment three..."} value={comment} onChange={e => setComment(e.target.value)}
+                      style={{ marginBottom: 12, minHeight: 100, resize: "vertical", lineHeight: 1.6 }} />
+                  )}
+                </>)}
+
                 <button className="obtn"
-                  disabled={!selectedTier || !username.trim()}
+                  disabled={!canOrder}
                   onClick={handlePlaceOrder}
-                  style={{ background: (!selectedTier || !username.trim()) ? "#111" : ac, color: (!selectedTier || !username.trim()) ? "#2a2a2a" : "#000", cursor: (!selectedTier || !username.trim()) ? "not-allowed" : "pointer" }}>
+                  style={{ background: !canOrder ? "#111" : ac, color: !canOrder ? "#2a2a2a" : "#000", cursor: !canOrder ? "not-allowed" : "pointer" }}>
                   {selectedTier ? `Pay ${formatNaira(selectedTier.price)}` : "Select a Package"}
                 </button>
+
                 <div style={{ marginTop: 18, display: "flex", flexDirection: "column", gap: 7 }}>
                   {[["⚡", "Starts within minutes"], ["🔒", "No password needed"], ["💳", "Pay securely via Paystack"]].map(([i, t]) => (
                     <div key={t} style={{ display: "flex", gap: 9, alignItems: "flex-start" }}>
@@ -531,7 +598,7 @@ export default function App() {
           </div>
           <h2 style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 42, marginBottom: 44 }}>THREE STEPS.</h2>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 2 }}>
-            {[["01", "Pick your package", "Choose platform, service type, and quantity from TikTok, YouTube, Twitter/X or Instagram."], ["02", "Pay securely", "You'll be redirected to Paystack to pay via card or bank transfer. Fast and secure."], ["03", "Track it live", "After payment you'll be redirected back to track your order in real time."]].map(([n, t, d]) => (
+            {[["01", "Pick your package", "Choose from 5 platforms — TikTok, YouTube, Twitter/X, Instagram or Facebook."], ["02", "Pay securely", "Redirected to Paystack to pay via card or bank transfer. Fast and secure."], ["03", "Track it live", "After payment you're redirected back to track your order in real time."]].map(([n, t, d]) => (
               <div key={n} style={{ padding: "32px 24px", border: "1px solid #0c0c0c", background: "#080808", transition: "border-color .2s" }}
                 onMouseOver={e => e.currentTarget.style.borderColor = ac + "1e"}
                 onMouseOut={e => e.currentTarget.style.borderColor = "#0c0c0c"}>
